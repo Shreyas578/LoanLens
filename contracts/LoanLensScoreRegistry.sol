@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-contract LoanLensScoreRegistry {
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract LoanLensScoreRegistry is Ownable {
     struct CreditScore {
         uint256 score;           // 0-850
         uint256 timestamp;
@@ -13,6 +15,8 @@ contract LoanLensScoreRegistry {
 
     mapping(address => CreditScore) public scores;
     mapping(address => address[]) public scoreViewers; // lenders who viewed this score
+
+    constructor() Ownable(msg.sender) {}
 
     event ScoreRecorded(
         address indexed wallet,
@@ -33,7 +37,7 @@ contract LoanLensScoreRegistry {
         bytes32 attestationHash,
         string calldata narrativeIPFS,
         uint8 riskLevel
-    ) external {
+    ) external onlyOwner {
         scores[wallet] = CreditScore({
             score: score,
             timestamp: block.timestamp,

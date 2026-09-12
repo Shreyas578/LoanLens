@@ -24,10 +24,24 @@ export default function Navigation() {
 
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-md bg-background/80 border-b border-white/5 px-8 py-4 flex justify-between items-center">
-      <Link href="/" className="flex items-center gap-3 group">
-        <ShieldCheck className="text-primary w-8 h-8 group-hover:scale-110 transition-transform" />
-        <span className="font-display font-bold text-xl glow-text hidden sm:inline-block">LoanLens</span>
-      </Link>
+      <div className="flex items-center">
+        <Link href="/" className="flex items-center gap-3 group">
+          <ShieldCheck className="text-primary w-8 h-8 group-hover:scale-110 transition-transform" />
+          <span className="font-display font-bold text-xl glow-text hidden sm:inline-block">LoanLens</span>
+        </Link>
+        {/* Navigation Links */}
+        <div className="hidden md:flex items-center gap-8 ml-8">
+          <Link href="/" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors">
+            Dashboard
+          </Link>
+          <Link href="/news" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors">
+            Market Intel
+          </Link>
+          <Link href="/docs" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors">
+            Docs
+          </Link>
+        </div>
+      </div>
 
       <div className="flex items-center gap-6">
         <Link href="/news" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-white transition-colors">

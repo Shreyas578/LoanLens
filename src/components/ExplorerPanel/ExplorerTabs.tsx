@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Activity, LayoutDashboard, History, Layers, Image as ImageIcon, LineChart } from "lucide-react";
+import { Activity, LayoutDashboard, History, Layers, Image as ImageIcon, LineChart, Globe } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -11,6 +11,7 @@ const tabs = [
   { id: "defi", label: "DeFi Activity", icon: Layers },
   { id: "nft", label: "NFT Portfolio", icon: ImageIcon },
   { id: "chains", label: "Chain Comp", icon: LineChart },
+  { id: "omnichain", label: "Omnichain", icon: Globe },
 ];
 
 export default function ExplorerTabs({ data }: { data: any }) {
@@ -59,6 +60,7 @@ export default function ExplorerTabs({ data }: { data: any }) {
             {activeTab === "defi" && <DeFiTab data={data} />}
             {activeTab === "nft" && <NFTTab data={data} />}
             {activeTab === "chains" && <ChainsTab data={data} />}
+            {activeTab === "omnichain" && <OmnichainTab data={data} />}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -171,6 +173,50 @@ function ChainsTab({ data }: { data: any }) {
           <Bar dataKey="txs" fill="#00F0FF" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
+    </div>
+  );
+}
+
+function OmnichainTab({ data }: { data: any }) {
+  return (
+    <div className="space-y-6">
+      <div className="bg-black/40 border border-white/10 p-6 rounded-2xl">
+        <h3 className="font-display font-bold text-xl mb-4 flex items-center gap-2">
+          <Globe className="text-primary w-5 h-5" /> LayerZero Cross-Chain Projection
+        </h3>
+        <p className="text-muted-foreground text-sm mb-6">
+          Your Creditcoin Testnet score can be seamlessly projected to other chains via CCIP/LayerZero to underwrite loans globally.
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+          <div className="bg-secondary/30 p-4 rounded-xl border border-white/5 text-center">
+            <div className="text-xs text-muted-foreground uppercase font-bold mb-2">Source Chain</div>
+            <div className="font-bold text-primary">Creditcoin Testnet</div>
+            <div className="text-xs font-mono mt-1 opacity-50">Score: {data?.score || 742}</div>
+          </div>
+          
+          <div className="flex justify-center text-accent">
+            <motion.div animate={{ x: [0, 20, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
+              →
+            </motion.div>
+          </div>
+          
+          <div className="bg-secondary/30 p-4 rounded-xl border border-white/5 text-center">
+            <div className="text-xs text-muted-foreground uppercase font-bold mb-2">Destination</div>
+            <div className="font-bold text-white">Arbitrum Sepolia</div>
+            <div className="text-xs font-mono mt-1 text-green-400">Score Syncing...</div>
+          </div>
+        </div>
+
+        <div className="mt-6 p-4 bg-[#0a0a0a] rounded-xl border border-white/5 font-mono text-xs text-white/50 overflow-x-auto">
+          <div>// LayerZero Simulated Payload</div>
+          <div className="text-accent mt-2">{"{"}</div>
+          <div className="ml-4">"dstChainId": 421614,</div>
+          <div className="ml-4">"payload": "0x00000000000000000000000000000000000000000000000000000000000002e6",</div>
+          <div className="ml-4">"adapterParams": "0x0001000000000000000000000000000000000000000000000000000000000030d40"</div>
+          <div className="text-accent">{"}"}</div>
+        </div>
+      </div>
     </div>
   );
 }

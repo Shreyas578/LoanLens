@@ -48,9 +48,9 @@ export default function NewsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {news.map((item, i) => (
+            {news.map((item: any, i: number) => (
               <motion.a
-                key={item.id}
+                key={item.id || i}
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -62,17 +62,18 @@ export default function NewsPage() {
                 <div>
                   <div className="flex justify-between items-start mb-4">
                     <span className="text-xs font-mono text-accent bg-accent/10 px-2 py-1 rounded">
-                      {item.source.title}
+                      {item.source}
                     </span>
                     <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                   </div>
                   <h3 className="font-display font-bold text-lg mb-3 line-clamp-3 group-hover:text-primary transition-colors">
                     {item.title}
                   </h3>
+                  <p className="text-sm text-muted-foreground line-clamp-3 mb-4">{item.body}</p>
                 </div>
                 
                 <div className="mt-4 pt-4 border-t border-border flex justify-between items-center text-xs text-muted-foreground">
-                  <span>{new Date(item.created_at).toLocaleDateString()}</span>
+                  <span>{new Date(item.published_on * 1000).toLocaleDateString()}</span>
                   <span className="flex items-center gap-1 text-primary">
                     <Zap className="w-3 h-3" /> AI Summary Ready
                   </span>

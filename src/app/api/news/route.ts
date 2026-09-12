@@ -2,20 +2,18 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    // We fetch from CryptoPanic's free public feed
-    const res = await fetch("https://cryptopanic.com/api/v1/posts/?public=true&filter=hot&currencies=ETH,CTC", {
-      next: { revalidate: 3600 } // Cache for an hour
+    // CryptoCompare News API doesn't require an auth token for low-volume hackathon use
+    const res = await fetch("https://min-api.cryptocompare.com/data/v2/news/?lang=EN", {
+      next: { revalidate: 3600 } 
     });
     
     if (!res.ok) {
         throw new Error("Failed to fetch news");
     }
 
-    const data = await res.json();
+    const json = await res.json();
+    const data = { results: json.Data.slice(0, 15) }; // Map to match previous structure
     
-    // In a real production scenario, we would map over these and pass them to Groq 
-    // to generate a 1-sentence summary for each. For the sake of speed in the hackathon,
-    // we'll return the raw data and let the frontend display the titles.
     return NextResponse.json(data);
   } catch (error) {
     console.error("News API Error:", error);

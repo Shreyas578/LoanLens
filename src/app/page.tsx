@@ -53,9 +53,14 @@ export default function Home() {
           </span>
         </h1>
         
-        <p className="text-muted-foreground text-lg md:text-xl text-center mb-12 max-w-2xl">
-          Instantly generate a verifiable credit score powered by the Attestcoin Protocol. Zero banks. Zero centralized oracles.
+        <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto text-center">
+          Your on-chain financial identity. AI-analyzed, zero-knowledge verifiable, and permanently attested on the Creditcoin protocol.
         </p>
+        <div className="flex flex-wrap justify-center gap-4 text-xs font-mono text-accent mb-12 opacity-80">
+          <span className="bg-accent/10 px-3 py-1 rounded-full border border-accent/20">Reads from All Chains</span>
+          <span className="bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-primary">Attested on Creditcoin</span>
+          <span className="bg-accent/10 px-3 py-1 rounded-full border border-accent/20">Projected Omnichain</span>
+        </div>
 
         {/* Search Bar */}
         <form onSubmit={handleSearch} className="w-full max-w-2xl relative group">

@@ -12,7 +12,7 @@ interface IERC5192 {
 }
 
 contract LoanLensCreditNFT is ERC721, IERC5192, Ownable {
-    uint256 private _nextTokenId;
+    uint256 private _nextTokenId = 1; // Start from 1 so 0 represents "no token" in mapping
     
     mapping(uint256 => bool) private _locked;
     mapping(address => uint256) public walletToTokenId;
@@ -36,12 +36,12 @@ contract LoanLensCreditNFT is ERC721, IERC5192, Ownable {
     }
 
     function updateScore(uint256 tokenId, uint256 newScore) external onlyOwner {
-        require(ownerOf(tokenId) != address(0), "Token does not exist");
+        require(_ownerOf(tokenId) != address(0), "Token does not exist");
         tokenScore[tokenId] = newScore;
     }
 
     function locked(uint256 tokenId) external view override returns (bool) {
-        require(ownerOf(tokenId) != address(0), "Token does not exist");
+        require(_ownerOf(tokenId) != address(0), "Token does not exist");
         return _locked[tokenId];
     }
     

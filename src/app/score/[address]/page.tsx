@@ -8,6 +8,7 @@ import ExplorerTabs from "@/components/ExplorerPanel/ExplorerTabs";
 import WhatIfSimulator from "@/components/CreditScore/WhatIfSimulator";
 import RiskDashboard from "@/components/RiskAgent/RiskDashboard";
 import ChatPanel from "@/components/NegotiationChat/ChatPanel";
+import VisualPassport from "@/components/CreditScore/VisualPassport";
 import { ShieldCheck, Activity, Wallet, AlertTriangle } from "lucide-react";
 
 export default function ScoreDashboard() {
@@ -174,6 +175,10 @@ export default function ScoreDashboard() {
                   </button>
                 )}
              </div>
+             
+             {/* IPFS Visual Passport Generation */}
+             <VisualPassport data={data} />
+             
           </div>
           
           {/* New Integrated Panels */}
