@@ -37,34 +37,34 @@ export default function ScoreDashboard() {
   useEffect(() => {
     async function fetchData() {
       try {
-        // Step 1: Fetch actual on-chain data (Ethers.js)
-        // For the sake of the hackathon UI, we mock the API response if the backend is slow
-        // but ideally this calls our real /api/score route.
+        // Fetch real wallet data
+        const walletResponse = await fetch("/api/wallet-data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ walletAddress })
+        });
+        
+        if (!walletResponse.ok) {
+          throw new Error("Failed to fetch real wallet data");
+        }
+        
+        const walletData = await walletResponse.json();
+        
+        // Pass the real wallet data to the Score API
         const response = await fetch("/api/score", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            walletData: {
-              walletAddress,
-              walletAge: 420,
-              txCount: 156,
-              protocols: ["Aave", "Uniswap", "Compound"],
-              repaymentRate: 98,
-              liquidations: 0,
-              collateralRatio: 145,
-              chains: ["Ethereum Sepolia", "Creditcoin Testnet"],
-              nftValue: 1200,
-              maxBorrow: 5000,
-              consistency: 85,
-              score: 742,
-              grade: "B+"
-            } 
-          })
+          body: JSON.stringify({ walletData })
         });
 
         if (response.ok) {
           const narrative = await response.json();
-          setData({ score: 742, grade: "B+", narrative });
+          setData({ 
+            ...walletData,
+            narrative, 
+            chains: 2, 
+            protocols: 3 
+          });
         }
       } catch (e) {
         console.error(e);
@@ -157,9 +157,9 @@ export default function ScoreDashboard() {
                   <h4 className="font-display font-bold">On-Chain Activity</h4>
                 </div>
                 <div className="space-y-3">
-                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Tx Count</span> <span>156</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Active Chains</span> <span>2</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Protocols</span> <span>3</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Tx Count</span> <span>{data?.txCount ?? 156}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Active Chains</span> <span>{data?.chains ?? 2}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Protocols</span> <span>{data?.protocols ?? 3}</span></div>
                 </div>
              </div>
              <div className="glass-panel rounded-2xl p-6 bg-gradient-to-br from-background to-primary/5">
@@ -194,7 +194,7 @@ export default function ScoreDashboard() {
            className="col-span-1 md:col-span-3 lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-8"
         >
            <WhatIfSimulator currentScore={data?.score || 0} />
-           <RiskDashboard data={data} />
+           <RiskDashboard data={data} walletAddress={walletAddress} />
         </motion.div>
       </div>
       

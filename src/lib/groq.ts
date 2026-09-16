@@ -45,7 +45,7 @@ Generate a credit analysis with the following JSON structure ONLY, no other text
           content: SCORING_PROMPT,
         },
       ],
-      model: "llama-3.3-70b-versatile",
+      model: "groq/compound",
       temperature: 0.2,
       response_format: { type: "json_object" },
     });
@@ -63,7 +63,7 @@ Generate a credit analysis with the following JSON structure ONLY, no other text
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-3.3-70b-instruct:free",
+        model: "nex-agi/nex-n2.5-pro:free",
         messages: [
           {
             role: "system",
@@ -79,12 +79,50 @@ Generate a credit analysis with the following JSON structure ONLY, no other text
       })
     });
 
-    if (!fallbackResponse.ok) {
-      throw new Error(`OpenRouter Fallback Error: ${fallbackResponse.statusText}`);
-    }
+    try {
+      if (!fallbackResponse.ok) {
+        throw new Error(`OpenRouter Fallback Error: ${fallbackResponse.statusText}`);
+      }
+      const data = await fallbackResponse.json();
+      const fallbackContent = data.choices[0]?.message?.content || "{}";
+      return JSON.parse(fallbackContent);
+    } catch (openRouterError) {
+      console.warn("OpenRouter also failed, falling back to NVIDIA NIM:", openRouterError);
+      
+      // Secondary Fallback: NVIDIA NIM
+      const nvidiaResponse = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.NVIDIA_NIM_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "meta/llama-3.1-70b-instruct",
+          messages: [
+            {
+              role: "system",
+              content: "You are an AI that outputs purely valid JSON.",
+            },
+            {
+              role: "user",
+              content: SCORING_PROMPT,
+            },
+          ],
+          temperature: 0.2,
+          max_tokens: 1024,
+        })
+      });
 
-    const data = await fallbackResponse.json();
-    const fallbackContent = data.choices[0]?.message?.content || "{}";
-    return JSON.parse(fallbackContent);
+      if (!nvidiaResponse.ok) {
+        throw new Error(`Nvidia NIM Error: ${nvidiaResponse.statusText}`);
+      }
+
+      const nvidiaData = await nvidiaResponse.json();
+      const nvidiaContent = nvidiaData.choices[0]?.message?.content || "{}";
+      
+      // Nvidia sometimes wraps json in ```json ... ```, so clean it
+      const cleanContent = nvidiaContent.replace(/```json/g, "").replace(/```/g, "").trim();
+      return JSON.parse(cleanContent);
+    }
   }
 }

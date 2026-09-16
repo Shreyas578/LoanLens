@@ -65,15 +65,20 @@ export default function ChatPanel({ data }: { data: any }) {
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
-            className="fixed bottom-8 right-8 w-96 h-[500px] glass-panel border border-primary/30 rounded-2xl flex flex-col shadow-2xl z-50 overflow-hidden bg-background/95"
+            className="fixed bottom-8 right-8 w-[400px] h-[550px] bg-[#0a0f16] border border-primary/40 rounded-3xl flex flex-col shadow-[0_0_40px_rgba(0,240,255,0.15)] z-50 overflow-hidden"
           >
             {/* Header */}
-            <div className="p-4 border-b border-white/10 flex justify-between items-center bg-primary/10">
-              <div className="flex items-center gap-2">
-                <Bot className="text-primary w-5 h-5" />
-                <span className="font-bold text-sm">LoanLens AI Negotiator</span>
+            <div className="p-4 border-b border-primary/20 bg-gradient-to-r from-primary/10 to-transparent flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Bot className="text-primary w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-white">LoanLens AI</h4>
+                  <p className="text-[10px] text-primary">Negotiator Agent • Online</p>
+                </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="text-muted-foreground hover:text-white">
+              <button onClick={() => setIsOpen(false)} className="text-muted-foreground hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -105,13 +110,13 @@ export default function ChatPanel({ data }: { data: any }) {
             </div>
 
             {/* Input & Suggestions */}
-            <div className="p-4 border-t border-white/10 bg-black/20">
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide mb-3 pb-1">
+            <div className="p-4 border-t border-primary/20 bg-[#0a0f16]">
+              <div className="flex gap-2 overflow-x-auto mb-3 pb-2 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {suggestedQuestions.map((q, i) => (
                   <button 
                     key={i} 
                     onClick={() => { setInput(q); }}
-                    className="whitespace-nowrap text-xs bg-white/5 border border-white/10 px-3 py-1.5 rounded-full hover:bg-white/10 transition-colors"
+                    className="whitespace-nowrap text-xs bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-full hover:bg-primary/20 transition-colors"
                   >
                     {q}
                   </button>

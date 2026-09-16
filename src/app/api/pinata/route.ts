@@ -26,9 +26,7 @@ export async function POST(req: Request) {
     const pinataRes = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.PINATA_API_KEY}`, // Assuming JWT is stored here, or adapt for key/secret
-        pinata_api_key: process.env.PINATA_API_KEY || "",
-        pinata_secret_api_key: process.env.PINATA_SECRET_KEY || "",
+        Authorization: `Bearer ${process.env.PINATA_SECRET_KEY}`,
       },
       body: formData,
     });

@@ -1,12 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AlertTriangle, AlertCircle, CheckCircle, TrendingDown, ShieldAlert, Cpu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ethers } from "ethers";
 
-export default function RiskDashboard({ data }: { data: any }) {
+export default function RiskDashboard({ data, walletAddress }: { data: any, walletAddress?: string }) {
   const [marketDrop, setMarketDrop] = useState(0);
   const [showDefender, setShowDefender] = useState(false);
+  const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
+  const [isSigning, setIsSigning] = useState(false);
+
+  useEffect(() => {
+    // Check initial connected wallet
+    const saved = localStorage.getItem("loanlens_wallet");
+    if (saved) setConnectedWallet(saved);
+
+    const handleWallet = () => {
+      setConnectedWallet(localStorage.getItem("loanlens_wallet"));
+    };
+    window.addEventListener("wallet_changed", handleWallet);
+    return () => window.removeEventListener("wallet_changed", handleWallet);
+  }, []);
+
+  const isOwner = connectedWallet?.toLowerCase() === walletAddress?.toLowerCase();
+
+  const handleSign = async () => {
+    if (!isOwner || typeof window === "undefined" || !(window as any).ethereum) return;
+    setIsSigning(true);
+    try {
+      const provider = new ethers.BrowserProvider((window as any).ethereum);
+      const signer = await provider.getSigner();
+      
+      // Send the generated rescue transaction
+      const tx = await signer.sendTransaction({
+        to: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+        data: "0x573ade81000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48000000000000000000000000000000000000000000000000000000003b9aca000000000000000000000000000000000000000000000000000000000000000002"
+      });
+      alert(`Transaction Submitted! Hash: ${tx.hash}`);
+      setShowDefender(false);
+    } catch (err: any) {
+      console.error(err);
+      alert("Transaction failed or was rejected.");
+    }
+    setIsSigning(false);
+  };
 
   // Dynamic calculations based on slider
   const initialHealthFactor = 1.15; // Example Aave health factor
@@ -113,7 +151,16 @@ export default function RiskDashboard({ data }: { data: any }) {
               </div>
               
               <p className="text-muted-foreground mb-6">
-                The AI has drafted a smart contract transaction to save this portfolio from liquidation. Since you are in "Watch Mode" for this address, here is the generated simulation:
+                The AI has drafted a smart contract transaction to save this portfolio from liquidation.
+                {!isOwner ? (
+                  <span className="block mt-2 text-yellow-500 font-bold">
+                    Since you are in "Watch Mode" for this address, signing is disabled. Here is the generated simulation:
+                  </span>
+                ) : (
+                  <span className="block mt-2 text-green-400 font-bold">
+                    You are the owner of this portfolio. You can sign this rescue transaction now:
+                  </span>
+                )}
               </p>
 
               <div className="bg-black border border-white/10 rounded-xl p-4 font-mono text-sm text-green-400 overflow-x-auto mb-6">
@@ -134,10 +181,15 @@ export default function RiskDashboard({ data }: { data: any }) {
                   Close Simulation
                 </button>
                 <button 
-                  disabled
-                  className="px-6 py-3 rounded-xl bg-primary/50 text-black font-bold cursor-not-allowed"
+                  onClick={handleSign}
+                  disabled={!isOwner || isSigning}
+                  className={`px-6 py-3 rounded-xl font-bold transition-colors ${
+                    isOwner 
+                      ? "bg-primary text-primary-foreground hover:scale-105" 
+                      : "bg-primary/50 text-black cursor-not-allowed"
+                  }`}
                 >
-                  Sign via MetaMask (Disabled)
+                  {!isOwner ? "Sign via MetaMask (Disabled)" : isSigning ? "Signing..." : "Sign Rescue Transaction"}
                 </button>
               </div>
             </motion.div>
